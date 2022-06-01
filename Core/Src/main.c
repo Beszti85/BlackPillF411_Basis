@@ -22,7 +22,8 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-
+#include "usbd_cdc_if.h"
+#include "flash_w25.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -50,7 +51,11 @@ SPI_HandleTypeDef hspi1;
 TIM_HandleTypeDef htim1;
 
 /* USER CODE BEGIN PV */
+volatile uint16_t ADC_RawData[6u] = {0u};
+float ADC_Voltage[6u];
 
+uint16_t SendVcp = 0u;
+uint8_t USB_CdcBuffer[] = "Hello, World!\r\n";
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -93,7 +98,7 @@ int main(void)
   SystemClock_Config();
 
   /* USER CODE BEGIN SysInit */
-
+  MX_DMA_Init();
   /* USER CODE END SysInit */
 
   /* Initialize all configured peripherals */
@@ -105,7 +110,7 @@ int main(void)
   MX_TIM1_Init();
   MX_I2C1_Init();
   /* USER CODE BEGIN 2 */
-
+  FLASH_W25_Identification();
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -115,6 +120,23 @@ int main(void)
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
+	// Convert ADC raw data from last running
+	for( uint16_t i = 0u; i < 6u; i++ )
+	{
+	  ADC_Voltage[i] = (float)ADC_RawData[i] * 3.3f / 4096.0f;
+	}
+	HAL_GPIO_TogglePin(LED_BOARD_GPIO_Port, LED_BOARD_Pin);
+	HAL_ADC_Start_DMA(&hadc1, (uint32_t*)&ADC_RawData[0u], 6u);
+	if( SendVcp == 1 )
+	{
+	  CDC_Transmit_FS(USB_CdcBuffer, sizeof(USB_CdcBuffer));
+	  SendVcp = 0;
+	}
+	else
+	{
+	  SendVcp++;
+	}
+	HAL_Delay(500u);
   }
   /* USER CODE END 3 */
 }
