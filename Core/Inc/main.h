@@ -57,6 +57,7 @@ void Error_Handler(void);
 /* USER CODE END EFP */
 
 /* Private defines -----------------------------------------------------------*/
+#define LEDDRV_ADDR 0x80
 #define LED_BOARD_Pin GPIO_PIN_13
 #define LED_BOARD_GPIO_Port GPIOC
 #define KEY_BUTTON_Pin GPIO_PIN_0
