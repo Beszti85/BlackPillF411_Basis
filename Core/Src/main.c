@@ -24,6 +24,7 @@
 /* USER CODE BEGIN Includes */
 #include "usbd_cdc_if.h"
 #include "flash_w25.h"
+#include "leddrv_pca9685pw.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -111,6 +112,7 @@ int main(void)
   MX_I2C1_Init();
   /* USER CODE BEGIN 2 */
   FLASH_W25_Identification();
+  //LEDDRV_PCA9685_ReadModeRegs();
   /* USER CODE END 2 */
 
   /* Infinite loop */
