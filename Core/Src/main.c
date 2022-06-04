@@ -25,6 +25,7 @@
 #include "usbd_cdc_if.h"
 #include "flash_w25.h"
 #include "leddrv_pca9685pw.h"
+#include "bme280.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -113,6 +114,8 @@ int main(void)
   /* USER CODE BEGIN 2 */
   FLASH_W25_Identification();
   //LEDDRV_PCA9685_ReadModeRegs();
+  BME280_Detect();
+  BME280_StartMeasurement( Oversampling1, Oversampling1, Oversampling1 );
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -122,23 +125,25 @@ int main(void)
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
-	// Convert ADC raw data from last running
-	for( uint16_t i = 0u; i < 6u; i++ )
-	{
-	  ADC_Voltage[i] = (float)ADC_RawData[i] * 3.3f / 4096.0f;
-	}
-	HAL_GPIO_TogglePin(LED_BOARD_GPIO_Port, LED_BOARD_Pin);
-	HAL_ADC_Start_DMA(&hadc1, (uint32_t*)&ADC_RawData[0u], 6u);
-	if( SendVcp == 1 )
-	{
-	  CDC_Transmit_FS(USB_CdcBuffer, sizeof(USB_CdcBuffer));
-	  SendVcp = 0;
-	}
-	else
-	{
-	  SendVcp++;
-	}
-	HAL_Delay(500u);
+    // Convert ADC raw data from last running
+    for( uint16_t i = 0u; i < 6u; i++ )
+    {
+      ADC_Voltage[i] = (float)ADC_RawData[i] * 3.3f / 4096.0f;
+    }
+    HAL_GPIO_TogglePin(LED_BOARD_GPIO_Port, LED_BOARD_Pin);
+    HAL_ADC_Start_DMA(&hadc1, (uint32_t*)&ADC_RawData[0u], 6u);
+    if( SendVcp == 1 )
+    {
+      CDC_Transmit_FS(USB_CdcBuffer, sizeof(USB_CdcBuffer));
+      SendVcp = 0;
+    }
+    else
+    {
+      SendVcp++;
+    }
+    // Read BME280 measurement result
+    BME280_ReadMeasResult();
+    HAL_Delay(500u);
   }
   /* USER CODE END 3 */
 }
