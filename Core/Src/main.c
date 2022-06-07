@@ -26,6 +26,7 @@
 #include "flash_w25.h"
 #include "leddrv_pca9685pw.h"
 #include "bme280.h"
+#include "max7219.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -116,6 +117,7 @@ int main(void)
   //LEDDRV_PCA9685_ReadModeRegs();
   BME280_Detect();
   BME280_StartMeasurement( Oversampling1, Oversampling1, Oversampling1 );
+  MAX7219_SetDisplayTestMode( TestOff);
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -143,7 +145,10 @@ int main(void)
     }
     // Read BME280 measurement result
     BME280_ReadMeasResult();
+    //MAX7219_SetDisplayTestMode( TestOn);
     HAL_Delay(500u);
+    //MAX7219_SetDisplayTestMode( TestOff);
+    //HAL_Delay(500u);
   }
   /* USER CODE END 3 */
 }
@@ -447,7 +452,7 @@ static void MX_GPIO_Init(void)
   HAL_GPIO_WritePin(CS_FLASH_GPIO_Port, CS_FLASH_Pin, GPIO_PIN_SET);
 
   /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(GPIOB, CS_OUT1_Pin|CS_OUT2_Pin|LEDCTRL_OE_Pin, GPIO_PIN_RESET);
+  HAL_GPIO_WritePin(GPIOB, CS_OUT1_Pin|CS_OUT2_Pin|LEDCTRL_OE_Pin, GPIO_PIN_SET);
 
   /*Configure GPIO pin : LED_BOARD_Pin */
   GPIO_InitStruct.Pin = LED_BOARD_Pin;
@@ -465,7 +470,7 @@ static void MX_GPIO_Init(void)
   /*Configure GPIO pin : CS_FLASH_Pin */
   GPIO_InitStruct.Pin = CS_FLASH_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
-  GPIO_InitStruct.Pull = GPIO_PULLUP;
+  GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
   HAL_GPIO_Init(CS_FLASH_GPIO_Port, &GPIO_InitStruct);
 
