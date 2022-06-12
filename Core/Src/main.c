@@ -27,6 +27,7 @@
 #include "leddrv_pca9685pw.h"
 #include "bme280.h"
 #include "max7219.h"
+#include "ledmatrix8x8.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -117,7 +118,8 @@ int main(void)
   //LEDDRV_PCA9685_ReadModeRegs();
   BME280_Detect();
   BME280_StartMeasurement( Oversampling1, Oversampling1, Oversampling1 );
-  MAX7219_SetDisplayTestMode( TestOff);
+  //MAX7219_SetDisplayTestMode( TestOff);
+  LEDMATRIX_Init();
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -146,6 +148,7 @@ int main(void)
     // Read BME280 measurement result
     BME280_ReadMeasResult();
     //MAX7219_SetDisplayTestMode( TestOn);
+    LEDMATRIX_RotateArrow();
     HAL_Delay(500u);
     //MAX7219_SetDisplayTestMode( TestOff);
     //HAL_Delay(500u);
