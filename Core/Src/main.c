@@ -28,6 +28,7 @@
 #include "bme280.h"
 #include "max7219.h"
 #include "ledmatrix8x8.h"
+#include "pcf8574.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -54,6 +55,8 @@ SPI_HandleTypeDef hspi1;
 
 TIM_HandleTypeDef htim1;
 
+UART_HandleTypeDef huart1;
+
 /* USER CODE BEGIN PV */
 volatile uint16_t ADC_RawData[6u] = {0u};
 float ADC_Voltage[6u];
@@ -70,6 +73,7 @@ static void MX_ADC1_Init(void);
 static void MX_DMA_Init(void);
 static void MX_TIM1_Init(void);
 static void MX_I2C1_Init(void);
+static void MX_USART1_UART_Init(void);
 /* USER CODE BEGIN PFP */
 
 /* USER CODE END PFP */
@@ -113,6 +117,7 @@ int main(void)
   MX_DMA_Init();
   MX_TIM1_Init();
   MX_I2C1_Init();
+  MX_USART1_UART_Init();
   /* USER CODE BEGIN 2 */
   FLASH_W25_Identification();
   //LEDDRV_PCA9685_ReadModeRegs();
@@ -149,9 +154,12 @@ int main(void)
     BME280_ReadMeasResult();
     //MAX7219_SetDisplayTestMode( TestOn);
     LEDMATRIX_RotateArrow();
+    PCF8574_WritePort(0x0Fu);
     HAL_Delay(500u);
     //MAX7219_SetDisplayTestMode( TestOff);
-    //HAL_Delay(500u);
+    PCF8574_WritePort(0x00u);
+    HAL_Delay(500u);
+
   }
   /* USER CODE END 3 */
 }
@@ -418,6 +426,39 @@ static void MX_TIM1_Init(void)
 }
 
 /**
+  * @brief USART1 Initialization Function
+  * @param None
+  * @retval None
+  */
+static void MX_USART1_UART_Init(void)
+{
+
+  /* USER CODE BEGIN USART1_Init 0 */
+
+  /* USER CODE END USART1_Init 0 */
+
+  /* USER CODE BEGIN USART1_Init 1 */
+
+  /* USER CODE END USART1_Init 1 */
+  huart1.Instance = USART1;
+  huart1.Init.BaudRate = 115200;
+  huart1.Init.WordLength = UART_WORDLENGTH_8B;
+  huart1.Init.StopBits = UART_STOPBITS_1;
+  huart1.Init.Parity = UART_PARITY_NONE;
+  huart1.Init.Mode = UART_MODE_TX_RX;
+  huart1.Init.HwFlowCtl = UART_HWCONTROL_NONE;
+  huart1.Init.OverSampling = UART_OVERSAMPLING_16;
+  if (HAL_UART_Init(&huart1) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  /* USER CODE BEGIN USART1_Init 2 */
+
+  /* USER CODE END USART1_Init 2 */
+
+}
+
+/**
   * Enable DMA controller clock
   */
 static void MX_DMA_Init(void)
@@ -455,7 +496,7 @@ static void MX_GPIO_Init(void)
   HAL_GPIO_WritePin(CS_FLASH_GPIO_Port, CS_FLASH_Pin, GPIO_PIN_SET);
 
   /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(GPIOB, CS_OUT1_Pin|CS_OUT2_Pin|LEDCTRL_OE_Pin, GPIO_PIN_SET);
+  HAL_GPIO_WritePin(GPIOB, CS_OUT1_Pin|CS_OUT2_Pin, GPIO_PIN_SET);
 
   /*Configure GPIO pin : LED_BOARD_Pin */
   GPIO_InitStruct.Pin = LED_BOARD_Pin;
@@ -477,8 +518,8 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
   HAL_GPIO_Init(CS_FLASH_GPIO_Port, &GPIO_InitStruct);
 
-  /*Configure GPIO pins : CS_OUT1_Pin CS_OUT2_Pin LEDCTRL_OE_Pin */
-  GPIO_InitStruct.Pin = CS_OUT1_Pin|CS_OUT2_Pin|LEDCTRL_OE_Pin;
+  /*Configure GPIO pins : CS_OUT1_Pin CS_OUT2_Pin */
+  GPIO_InitStruct.Pin = CS_OUT1_Pin|CS_OUT2_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
