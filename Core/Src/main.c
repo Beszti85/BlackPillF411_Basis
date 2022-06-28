@@ -29,6 +29,9 @@
 #include "max7219.h"
 #include "ledmatrix8x8.h"
 #include "pcf8574.h"
+#include "max30100.h"
+#include "mcp23s17.h"
+#include "spi_module.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -124,7 +127,10 @@ int main(void)
   BME280_Detect();
   BME280_StartMeasurement( Oversampling1, Oversampling1, Oversampling1 );
   //MAX7219_SetDisplayTestMode( TestOff);
-  LEDMATRIX_Init();
+  //LEDMATRIX_Init();
+  MAX30100_Init();
+  //MCP23S17_Init();
+  SPIMODULE_Init();
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -153,11 +159,13 @@ int main(void)
     // Read BME280 measurement result
     BME280_ReadMeasResult();
     //MAX7219_SetDisplayTestMode( TestOn);
-    LEDMATRIX_RotateArrow();
+    //LEDMATRIX_RotateArrow();
     PCF8574_WritePort(0x0Fu);
+    SPIMODULE_LedsSetState( 0u );
     HAL_Delay(500u);
     //MAX7219_SetDisplayTestMode( TestOff);
     PCF8574_WritePort(0x00u);
+    SPIMODULE_LedsSetState( 1u );
     HAL_Delay(500u);
 
   }
@@ -496,7 +504,7 @@ static void MX_GPIO_Init(void)
   HAL_GPIO_WritePin(CS_FLASH_GPIO_Port, CS_FLASH_Pin, GPIO_PIN_SET);
 
   /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(GPIOB, CS_OUT1_Pin|CS_OUT2_Pin, GPIO_PIN_SET);
+  HAL_GPIO_WritePin(GPIOB, CS_OUT1_Pin|CS_OUT2_Pin|CS_OUT3_Pin, GPIO_PIN_SET);
 
   /*Configure GPIO pin : LED_BOARD_Pin */
   GPIO_InitStruct.Pin = LED_BOARD_Pin;
@@ -518,8 +526,8 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
   HAL_GPIO_Init(CS_FLASH_GPIO_Port, &GPIO_InitStruct);
 
-  /*Configure GPIO pins : CS_OUT1_Pin CS_OUT2_Pin */
-  GPIO_InitStruct.Pin = CS_OUT1_Pin|CS_OUT2_Pin;
+  /*Configure GPIO pins : CS_OUT1_Pin CS_OUT2_Pin CS_OUT3_Pin */
+  GPIO_InitStruct.Pin = CS_OUT1_Pin|CS_OUT2_Pin|CS_OUT3_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
