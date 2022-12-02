@@ -146,7 +146,7 @@ int main(void)
   LcdPuts("Hello_BlackPillF411", 0, 0);
   //MAX30100_Init();
   //MCP23S17_Init();
-  //SPIMODULE_Init();
+  SPIMODULE_Init(&hspi1, CS_OUT4_GPIO_Port, CS_OUT4_Pin);
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -512,7 +512,7 @@ static void MX_TIM1_Init(void)
     Error_Handler();
   }
   sConfigOC.OCMode = TIM_OCMODE_PWM1;
-  sConfigOC.Pulse = 499;
+  sConfigOC.Pulse = 699;
   sConfigOC.OCPolarity = TIM_OCPOLARITY_HIGH;
   sConfigOC.OCNPolarity = TIM_OCNPOLARITY_HIGH;
   sConfigOC.OCFastMode = TIM_OCFAST_DISABLE;
@@ -618,6 +618,9 @@ static void MX_GPIO_Init(void)
   /*Configure GPIO pin Output Level */
   HAL_GPIO_WritePin(GPIOB, CS_OUT1_Pin|CS_OUT2_Pin|CS_OUT3_Pin, GPIO_PIN_SET);
 
+  /*Configure GPIO pin Output Level */
+  HAL_GPIO_WritePin(CS_OUT4_GPIO_Port, CS_OUT4_Pin, GPIO_PIN_RESET);
+
   /*Configure GPIO pin : LED_BOARD_Pin */
   GPIO_InitStruct.Pin = LED_BOARD_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
@@ -632,8 +635,8 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
   HAL_GPIO_Init(CS_FLASH_GPIO_Port, &GPIO_InitStruct);
 
-  /*Configure GPIO pins : CS_OUT1_Pin CS_OUT2_Pin CS_OUT3_Pin */
-  GPIO_InitStruct.Pin = CS_OUT1_Pin|CS_OUT2_Pin|CS_OUT3_Pin;
+  /*Configure GPIO pins : CS_OUT1_Pin CS_OUT2_Pin CS_OUT4_Pin CS_OUT3_Pin */
+  GPIO_InitStruct.Pin = CS_OUT1_Pin|CS_OUT2_Pin|CS_OUT4_Pin|CS_OUT3_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
